@@ -1,5 +1,6 @@
 import { join } from 'node:path'
 import { scanAiVaultSessions } from './session-scanner'
+import { readClaudeLiveSessionsById } from './session-scanner-claude-live'
 import { getWslHomeAsync, listWslDistrosAsync } from '../wsl'
 import type { AiVaultListArgs, AiVaultListResult } from '../../shared/ai-vault-types'
 import { LOCAL_EXECUTION_HOST_ID } from '../../shared/execution-host'
@@ -32,6 +33,29 @@ export function configureAiVaultSessionSources(next: AiVaultSessionSources): voi
   sources = next
 }
 
+// Why: applied on EVERY list return — including scan-cache hits — because a
+// process can exit (or start) without any transcript write, so live flags go
+// stale inside the 15s TTL. The overlay is cheap (a dozen tiny registry files
+// + kill(0) probes) next to a transcript scan. The cache keeps the pristine
+// scan result; sessions are copied, never mutated, so a hit can't inherit a
+// previous overlay's flags.
+async function withClaudeLiveOverlay(result: AiVaultListResult): Promise<AiVaultListResult> {
+  const liveById = await readClaudeLiveSessionsById()
+  if (liveById.size === 0) {
+    return result
+  }
+  return {
+    ...result,
+    sessions: result.sessions.map((session) => {
+      if (session.agent !== 'claude' || session.executionHostId !== LOCAL_EXECUTION_HOST_ID) {
+        return session
+      }
+      const live = liveById.get(session.sessionId)
+      return live ? { ...session, live } : session
+    })
+  }
+}
+
 export async function listAiVaultSessions(args?: AiVaultListArgs): Promise<AiVaultListResult> {
   // Scope paths change the result set, so they must be part of the cache key.
   const key = JSON.stringify({
@@ -42,10 +66,10 @@ export async function listAiVaultSessions(args?: AiVaultListArgs): Promise<AiVau
   // Why: opening this panel repeatedly should not re-parse hundreds of JSONL
   // transcripts; explicit refreshes bypass the cache but not an active scan.
   if (args?.force !== true && cachedList?.key === key && cachedList.expiresAt > now) {
-    return cachedList.result
+    return withClaudeLiveOverlay(cachedList.result)
   }
   if (inflightList && inflightKey === key) {
-    return inflightList
+    return inflightList.then(withClaudeLiveOverlay)
   }
 
   inflightKey = key
@@ -77,7 +101,7 @@ export async function listAiVaultSessions(args?: AiVaultListArgs): Promise<AiVau
         inflightList = null
       }
     })
-  return inflightList
+  return inflightList.then(withClaudeLiveOverlay)
 }
 
 // Exported for the subagent-transcript IPC path, which validates

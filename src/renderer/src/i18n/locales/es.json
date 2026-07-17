@@ -10092,7 +10092,8 @@
             "worktreeUnavailable": "El worktree ya no está disponible.",
             "openSupportedWorkspace": "Abre un workspace antes de reanudar una sesión.",
             "localSessionSshWorkspaceUnsupported": "El historial de esta sesión solo existe en este equipo. Para reanudarla, abre un workspace local. Los workspaces SSH no tienen acceso a ese historial.",
-            "sessionHostMismatchUnsupported": "Esta sesión pertenece a un host diferente. Abre un espacio de trabajo en el mismo host para reanudarla."
+            "sessionHostMismatchUnsupported": "Esta sesión pertenece a un host diferente. Abre un espacio de trabajo en el mismo host para reanudarla.",
+            "sessionStillRunning": "This session is still open in another process (pid {{value0}}). Exit it there first — resuming now would fork the transcript."
           },
           "AiVaultPanelControls": {
             "scanningSessions": "Buscando sesiones",
@@ -10210,7 +10211,8 @@
             "jumpToWorktree": "Saltar al worktree",
             "recoverableBadge": "No guardada",
             "subagentCountSingular": "1 subagente",
-            "subagentCountPlural": "{{value0}} subagentes"
+            "subagentCountPlural": "{{value0}} subagentes",
+            "runningBadge": "Running"
           },
           "FileExplorerNameFilter": {
             "26fb73c6e3": "Buscar archivos",

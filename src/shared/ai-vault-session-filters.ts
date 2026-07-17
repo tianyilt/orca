@@ -223,6 +223,13 @@ function matchesQuery(
 }
 
 function compareSessions(left: AiVaultSession, right: AiVaultSession, sort: AiVaultSort): number {
+  // Sessions held by a live process outrank everything: they're the ones a user
+  // can act on right now, and an alive-but-idle session would otherwise sink
+  // below hours of dead history. Groups preserve this order too.
+  const liveRank = Number(Boolean(right.live)) - Number(Boolean(left.live))
+  if (liveRank !== 0) {
+    return liveRank
+  }
   const leftValue = sort === 'created' ? left.createdAt : left.updatedAt
   const rightValue = sort === 'created' ? right.createdAt : right.updatedAt
   const leftTime = Date.parse(leftValue ?? left.modifiedAt)

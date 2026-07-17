@@ -27,6 +27,18 @@ export function getSessionDetailsId(sessionId: string): string {
   return `ai-vault-session-details-${sessionId.replace(/[^A-Za-z0-9_-]/g, '-')}`
 }
 
+// Claude Code's registry status words → the shared dot vocabulary. 'shell' is
+// a user parked at a shell prompt — an idle session, not agent activity.
+export function liveDotState(status: string): 'working' | 'waiting' | 'idle' {
+  if (status === 'busy') {
+    return 'working'
+  }
+  if (status === 'waiting') {
+    return 'waiting'
+  }
+  return 'idle'
+}
+
 export function SessionMetadata({
   session,
   liveState,
@@ -50,6 +62,22 @@ export function SessionMetadata({
         {/* Why: 'done' is the resting state of every finished pane — badging it
             would mark most rows; only live attention states earn a dot. */}
         {liveState && liveState !== 'done' ? <AgentStateDot state={liveState} /> : null}
+        {/* Why: a session held open by an external process (plain terminal —
+            no pane, so no hook-fed liveState) is invisible to pane tracking;
+            the pid-registry overlay is its only live signal. Suppressed when a
+            pane already reports state to avoid a double indicator. */}
+        {!liveState && session.live ? (
+          <Badge
+            variant="outline"
+            className="h-5 shrink-0 gap-1 border-border/70 bg-background px-1.5 py-0 text-[10px] font-medium"
+            title={[session.live.name, `pid ${session.live.pid}`, session.live.status]
+              .filter(Boolean)
+              .join(' · ')}
+          >
+            <AgentStateDot state={liveDotState(session.live.status)} />
+            {translate('auto.components.right.sidebar.AiVaultSessionRow.runningBadge', 'Running')}
+          </Badge>
+        ) : null}
         <span className="min-w-0 shrink-[2] truncate">{agentLabel(session.agent)}</span>
         <span className="shrink-0 tabular-nums">
           {translate(

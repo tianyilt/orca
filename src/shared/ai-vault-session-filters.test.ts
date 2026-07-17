@@ -113,4 +113,27 @@ describe('/shared ai-vault-session-filters (lifted core)', () => {
   it('builds preview search text from conversation turns', () => {
     expect(sessionPreviewSearchText(baseSession)).toContain('scope tabs')
   })
+
+  it('sorts sessions held by a live process above newer dead ones', () => {
+    // The live session is OLDER — without the live-first rank it would sink
+    // below hours of dead history, which is exactly the confusion this fixes.
+    const liveButOld: AiVaultSession = {
+      ...baseSession,
+      id: 'claude:live',
+      sessionId: 'session-live',
+      updatedAt: '2026-04-30T09:00:00.000Z',
+      modifiedAt: '2026-04-30T09:00:00.000Z',
+      live: { pid: 4242, status: 'idle', name: 'my-task' }
+    }
+    expect(
+      filterAiVaultSessions([baseSession, liveButOld], {
+        query: '',
+        agents: ['claude'],
+        scope: 'all',
+        sort: 'updated',
+        activeWorktreePaths: [],
+        hideEmptySessions: false
+      }).map((session) => session.id)
+    ).toEqual(['claude:live', 'claude:1'])
+  })
 })

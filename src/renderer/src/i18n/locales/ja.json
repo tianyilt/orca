@@ -10092,7 +10092,8 @@
             "worktreeUnavailable": "ワークツリーは利用できなくなりました。",
             "openSupportedWorkspace": "Open a workspace before resuming a session.",
             "localSessionSshWorkspaceUnsupported": "このセッションの履歴はこのマシンに保存されているため、SSH ワークスペースでは再開できません。代わりにローカルワークスペースを開いてください。",
-            "sessionHostMismatchUnsupported": "このセッションは別のホストに属しています。再開するには同じホスト上のワークスペースを開いてください。"
+            "sessionHostMismatchUnsupported": "このセッションは別のホストに属しています。再開するには同じホスト上のワークスペースを開いてください。",
+            "sessionStillRunning": "This session is still open in another process (pid {{value0}}). Exit it there first — resuming now would fork the transcript."
           },
           "AiVaultPanelControls": {
             "scanningSessions": "Scanning sessions",
@@ -10210,7 +10211,8 @@
             "jumpToWorktree": "ワークツリーにジャンプ",
             "recoverableBadge": "未保存",
             "subagentCountSingular": "1 件のサブエージェント",
-            "subagentCountPlural": "{{value0}} 件のサブエージェント"
+            "subagentCountPlural": "{{value0}} 件のサブエージェント",
+            "runningBadge": "Running"
           },
           "FileExplorerNameFilter": {
             "26fb73c6e3": "ファイルを検索",

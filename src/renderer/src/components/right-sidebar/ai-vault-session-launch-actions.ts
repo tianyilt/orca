@@ -78,6 +78,19 @@ export function useAiVaultSessionLaunchActions({
 
   const handleResume = useCallback(
     (session: AiVaultSession, targetWorktreeId?: string): void => {
+      // A live process still owns this session; a second `--resume` beside it
+      // would fork the transcript into two diverging files. Blocking (instead
+      // of warning) keeps history linear — exit the other process first.
+      if (session.live) {
+        toast.error(
+          translate(
+            'auto.components.right.sidebar.AiVaultPanel.sessionStillRunning',
+            'This session is still open in another process (pid {{value0}}). Exit it there first — resuming now would fork the transcript.',
+            { value0: session.live.pid }
+          )
+        )
+        return
+      }
       const targetId = resolveAiVaultSessionLaunchTarget({
         sessionFilePath: session.filePath,
         sessionExecutionHostId: session.executionHostId,

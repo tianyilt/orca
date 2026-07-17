@@ -10092,7 +10092,8 @@
             "worktreeUnavailable": "工作树不再可用。",
             "openSupportedWorkspace": "在恢复会话之前，请先打开一个工作区。",
             "localSessionSshWorkspaceUnsupported": "此会话的历史记录存储在本机上，因此无法在 SSH 工作区中恢复。请改为打开一个本地工作区。",
-            "sessionHostMismatchUnsupported": "此会话属于其他主机。请打开同一主机上的工作区以恢复它。"
+            "sessionHostMismatchUnsupported": "此会话属于其他主机。请打开同一主机上的工作区以恢复它。",
+            "sessionStillRunning": "This session is still open in another process (pid {{value0}}). Exit it there first — resuming now would fork the transcript."
           },
           "AiVaultPanelControls": {
             "scanningSessions": "正在扫描会话",
@@ -10210,7 +10211,8 @@
             "jumpToWorktree": "跳转到工作树",
             "recoverableBadge": "未保存",
             "subagentCountSingular": "1 个子智能体",
-            "subagentCountPlural": "{{value0}} 个子智能体"
+            "subagentCountPlural": "{{value0}} 个子智能体",
+            "runningBadge": "Running"
           },
           "FileExplorerNameFilter": {
             "26fb73c6e3": "查找文件",

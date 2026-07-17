@@ -73,6 +73,18 @@ export type AiVaultSessionSubagentInfo = {
   status: AiVaultSubagentRunStatus | null
 }
 
+// A live local process currently holding this session open. Sourced from the
+// pid registry Claude Code maintains at ~/.claude/sessions/<pid>.json — this
+// covers sessions started OUTSIDE Orca (a plain terminal), which pane-bound
+// agent hooks can never attribute. `status` and `name` are Claude Code's own
+// words (busy | idle | waiting | shell; CLI-assigned card name), passed through
+// untranslated so the UI shows exactly what the CLI reports.
+export type AiVaultSessionLiveInfo = {
+  pid: number
+  status: string
+  name: string | null
+}
+
 export type AiVaultSession = {
   id: string
   executionHostId: ExecutionHostId
@@ -101,6 +113,10 @@ export type AiVaultSession = {
   subagentTranscriptCount: number
   resumeCommand: string
   subagent: AiVaultSessionSubagentInfo | null
+  // Present only when a live local process holds this session (see
+  // AiVaultSessionLiveInfo). Overlaid per-list rather than persisted in the
+  // scan cache: process liveness changes without any transcript write.
+  live?: AiVaultSessionLiveInfo | null
 }
 
 export type AiVaultSubagentListArgs = {
