@@ -10,5 +10,7 @@
     ".github/actions/cloud-sql-rollout-lease/**",
     ".anti-slop-plugin/**",
     "src/main/runtime/__fixtures__/*.timing.json"
-  ]
+  ],
+  "useTabs": false,
+  "tabWidth": 2
 }
